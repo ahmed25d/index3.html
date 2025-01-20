@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Questions Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    .form-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .question {
+      margin-bottom: 15px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Dynamic Questions Form</h2>
+    <form id="dynamicForm"></form>
+    <button onclick="handleSubmit()">Submit</button>
+  </div>
+
+  <script>
+    // Define questions with types and options
+    const questions = [
+      {
+        type: "text",
+        label: "What is your name?",
+        name: "name",
+      },
+      {
+        type: "textarea",
+        label: "Describe yourself in a few sentences.",
+        name: "description",
+      },
+      {
+        type: "radio",
+        label: "What is your favorite color?",
+        name: "favoriteColor",
+        options: ["Red", "Green", "Blue", "Yellow"]
+      },
+      {
+        type: "checkbox",
+        label: "Which programming languages do you know?",
+        name: "languages",
+        options: ["JavaScript", "Python", "Java", "C++"]
+      },
+      {
+        type: "select",
+        label: "What is your country?",
+        name: "country",
+        options: ["United States", "Canada", "United Kingdom", "Australia"]
+      }
+    ];
+
+    // Render the questions dynamically
+    const form = document.getElementById("dynamicForm");
+
+    questions.forEach(question => {
+      const div = document.createElement("div");
+      div.className = "question";
+
+      // Create label
+      const label = document.createElement("label");
+      label.textContent = question.label;
+      label.htmlFor = question.name;
+      div.appendChild(label);
+
+      // Create input elements based on type
+      if (question.type === "text") {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = question.name;
+        input.required = true;
+        div.appendChild(input);
+      } else if (question.type === "textarea") {
+        const textarea = document.createElement("textarea");
+        textarea.name = question.name;
+        textarea.rows = 4;
+        textarea.required = true;
+        div.appendChild(textarea);
+      } else if (question.type === "radio") {
+        question.options.forEach(option => {
+          const radioDiv = document.createElement("div");
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = question.name;
+          input.value = option;
+          input.required = true;
+
+          const optionLabel = document.createElement("label");
+          optionLabel.textContent = option;
+          optionLabel.style.marginLeft = "5px";
+
+          radioDiv.appendChild(input);
+          radioDiv.appendChild(optionLabel);
+          div.appendChild(radioDiv);
+        });
+      } else if (question.type === "checkbox") {
+        question.options.forEach(option => {
+          const checkboxDiv = document.createElement("div");
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.name = question.name;
+          input.value = option;
+
+          const optionLabel = document.createElement("label");
+          optionLabel.textContent = option;
+          optionLabel.style.marginLeft = "5px";
+
+          checkboxDiv.appendChild(input);
+          checkboxDiv.appendChild(optionLabel);
+          div.appendChild(checkboxDiv);
+        });
+      } else if (question.type === "select") {
+        const select = document.createElement("select");
+        select.name = question.name;
+        select.required = true;
+
+        question.options.forEach(option => {
+          const optionElement = document.createElement("option");
+          optionElement.value = option;
+          optionElement.textContent = option;
+          select.appendChild(optionElement);
+        });
+        div.appendChild(select);
+      }
+
+      form.appendChild(div);
+    });
+
+    // Handle form submission
+    function handleSubmit() {
+      const formData = new FormData(form);
+      const entries = Object.fromEntries(formData.entries());
+
+      // Add checkbox values manually
+      questions
+        .filter(q => q.type === "checkbox")
+        .forEach(q => {
+          const selected = Array.from(
+            form.querySelectorAll(`input[name="${q.name}"]:checked`)
+          ).map(checkbox => checkbox.value);
+          entries[q.name] = selected;
+        });
+
+      console.log("Form Data:", entries);
+      alert("Form submitted! Check the console for data.");
+    }
+  </script>
+</body>
+</html>
